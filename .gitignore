@@ -27,6 +27,9 @@
 .pub/
 /build/
 
+# Project secrets
+/assets/json/secrets.json
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
