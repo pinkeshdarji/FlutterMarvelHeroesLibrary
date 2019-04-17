@@ -31,8 +31,3 @@ class MyApp extends StatelessWidget {
 
 
 //TODO UI
-//TODO proper sensitive data
-//TODO as per fluttio networking rules like mode calls outside
-//TODO font
-//TODO apptheme
-//TODO use computes
