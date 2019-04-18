@@ -325,7 +325,7 @@ packages:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2+5"
+    version: "0.2.3"
   sky_engine:
     dependency: transitive
     description: flutter

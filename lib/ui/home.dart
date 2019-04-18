@@ -57,8 +57,6 @@ class _HomeState extends State<Home> {
 //    return HerosHub.fromJson(decodedJson);
 //  }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,18 +97,69 @@ class _HomeState extends State<Home> {
     );
   }
 
-  GestureDetector _buildCharacter(
+  Widget _buildCharacter(
       BuildContext context, int index, Result superhero) {
-    return GestureDetector(
-      onTap: () {
-        print("open botton sheet");
-        _settingModalBottomSheet(context);
-      },
-      child: Container(
-        margin: EdgeInsets.all(8),
-        height: 100,
-        color: Colors.yellow,
-        child: Text('${superhero.name}'),
+    return Container(
+      margin: EdgeInsets.all(16),
+      height: 200,
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(blurRadius: 70, spreadRadius: -80, offset: Offset(0, 40))
+      ]),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.horizontal(left: Radius.circular(30))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.horizontal(left: Radius.circular(30)),
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/download.jpeg'))),
+              width: 130,
+            ),
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      child: Text('${superhero.name}',
+                          style: Theme.of(context).textTheme.headline),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        child: superhero.description != ''
+                            ? Text(
+                                '${superhero.description}',
+                                style: Theme.of(context).textTheme.body1,
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            : Text('No description'),
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                      onTap: (){
+                        _settingModalBottomSheet(context);
+                      },
+                      title: Text('More infovvvvv',style: Theme.of(context).textTheme.subhead,),
+                      trailing: Icon(Icons.navigate_next),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -140,13 +189,12 @@ class _HomeState extends State<Home> {
   }
 }
 
-
 Future<HerosHub> _fetchData(String url) async {
   var response = await http.get(url);
   print(response.statusCode);
   print(response.body);
 
-  // Use the compute function to if parsing takes more than 16ms
+  // Use the compute function to if parsing takes more than 16ms using seperate isolates
   return compute(parseHeros, response.body);
 }
 

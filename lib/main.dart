@@ -17,11 +17,12 @@ class MyApp extends StatelessWidget {
         //Set font
         fontFamily: 'Marvel',
         //Set text theme optional
-//        textTheme: TextTheme(
-//          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold,fontStyle: ),
+        textTheme: TextTheme(
+          headline: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w900,),
 //          title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-//          body1: TextStyle(fontSize: 14.0),
-//        ),
+          body1: TextStyle(fontSize: 14.0,color: Colors.grey,fontWeight: FontWeight.w900),
+          subhead: TextStyle(fontSize: 16.0,fontWeight: FontWeight.w900),
+        ),
 
       ),
       home: Home(),
