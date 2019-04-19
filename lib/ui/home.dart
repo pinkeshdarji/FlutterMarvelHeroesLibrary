@@ -8,6 +8,8 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter_marvel_heroes_library/utility/secret.dart';
 import 'package:flutter_marvel_heroes_library/utility/secretloader.dart';
+import 'customized/marvelbottomsheet.dart';
+import 'customized/rounded_model.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -33,7 +35,7 @@ class _HomeState extends State<Home> {
           generateMd5("$ts" + s.marvelPrivateApiKey + s.marvelPublicApiKey);
       //Prepare ULR
       url =
-          "https://gateway.marvel.com:443/v1/public/characters?limit=10&apikey=${s.marvelPublicApiKey}&ts=$ts&hash=$hash";
+          "https://gateway.marvel.com:443/v1/public/characters?limit=5&apikey=${s.marvelPublicApiKey}&ts=$ts&hash=$hash";
       //Make api call
       herosHub = _fetchData(url);
       setState(() {});
@@ -75,30 +77,65 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: herosHub != null
-          ? FutureBuilder<HerosHub>(
-              future: herosHub,
-              builder: (context, snapshot) {
-                print("snapshot is $snapshot");
-                if (snapshot.hasError) print(snapshot.error);
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(10, 16, 10, 10),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.fromLTRB(12, 5, 12, 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color:Colors.red,
+                    ),
+                    child: Text("Popular",style: TextStyle(color: Colors.white,fontSize: 20 ),),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
+                    child: Text("A-Z",style: TextStyle(color: Colors.black,fontSize: 20 ),),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
+                    child: Text("Last viewed",style: TextStyle(color: Colors.black,fontSize: 20 ),),
+                  )
+                ],
+              ),
+            ),
+            Expanded(
+              child:             herosHub != null
+                  ? FutureBuilder<HerosHub>(
+                future: herosHub,
+                builder: (context, snapshot) {
+                  print("snapshot is $snapshot");
+                  if (snapshot.hasError) print(snapshot.error);
 
-                return snapshot.hasData
-                    ? ListView.builder(
-                        itemCount: snapshot.data.data.results.length,
-                        itemBuilder: (context, index) {
-                          return _buildCharacter(context, index,
-                              snapshot.data.data.results[index]);
-                        },
-                      )
-                    : Center(child: CircularProgressIndicator());
-              },
+                  return snapshot.hasData
+                      ? ListView.builder(
+                    itemCount: snapshot.data.data.results.length,
+                    itemBuilder: (context, index) {
+                      return _buildCharacter(context, index,
+                          snapshot.data.data.results[index]);
+                    },
+                  )
+                      : Center(child: CircularProgressIndicator());
+                },
+              )
+                  : Center(child: CircularProgressIndicator()),
             )
-          : Center(child: CircularProgressIndicator()),
+
+          ],
+        ),
+      )
+
     );
   }
 
-  Widget _buildCharacter(
-      BuildContext context, int index, Result superhero) {
+  Widget _buildCharacter(BuildContext context, int index, Result superhero) {
     return Container(
       margin: EdgeInsets.all(16),
       height: 200,
@@ -117,7 +154,9 @@ class _HomeState extends State<Home> {
                   borderRadius:
                       BorderRadius.horizontal(left: Radius.circular(30)),
                   image: DecorationImage(
-                      image: AssetImage('assets/images/download.jpeg'))),
+                      image: NetworkImage(
+                    '${superhero.thumbnail.path}.${superhero.thumbnail.extension}'
+                  ),fit: BoxFit.cover)),
               width: 130,
             ),
             Expanded(
@@ -148,10 +187,13 @@ class _HomeState extends State<Home> {
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                      onTap: (){
-                        _settingModalBottomSheet(context);
+                      onTap: () {
+                        _settingModalBottomSheet(context, superhero);
                       },
-                      title: Text('More infovvvvv',style: Theme.of(context).textTheme.subhead,),
+                      title: Text(
+                        'More info',
+                        style: Theme.of(context).textTheme.subhead,
+                      ),
                       trailing: Icon(Icons.navigate_next),
                     ),
                   ],
@@ -164,24 +206,35 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _settingModalBottomSheet(context) {
-    showModalBottomSheet(
+  void _settingModalBottomSheet(context, Result superhero) {
+    print('${superhero.thumbnail.path}.${superhero.thumbnail.extension}');
+    showRoundedModalBottomSheet(
+        radius: 25,
+        color: Colors.white,
         context: context,
         builder: (BuildContext bc) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
+          return ListView(
+            shrinkWrap: true,
             children: <Widget>[
-              new ListTile(
-                leading: new Icon(Icons.music_note),
-                title: new Text('Music'),
+              Container(
+                height: 300,
+                decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(25)),
+                    image: DecorationImage(
+                        image: NetworkImage(
+                            '${superhero.thumbnail.path}.${superhero.thumbnail.extension}'),
+                        fit: BoxFit.cover)),
               ),
-              new ListTile(
-                leading: new Icon(Icons.photo_album),
-                title: new Text('Photos'),
+              Container(
+                margin: EdgeInsets.all(8),
+                child: Text(superhero.name,style: Theme.of(context).textTheme.headline,),
               ),
-              new ListTile(
-                leading: new Icon(Icons.videocam),
-                title: new Text('Video'),
+              Container(
+                margin: EdgeInsets.all(8),
+                child: superhero.description != ""
+                    ?Text(superhero.description,style: Theme.of(context).textTheme.body1,)
+                :Text('No description'),
               ),
             ],
           );
